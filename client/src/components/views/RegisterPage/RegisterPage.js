@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../../../_actions/user_action";
-import { NavigateFunction } from "react-router-dom";
 
-let navigate = NavigateFunction();
 function Register(props) {
   const dispatch = useDispatch();
 
@@ -40,7 +38,7 @@ function Register(props) {
 
     dispatch(registerUser(body)).then((response) => {
       if(response.payload.success) {
-        navigate("/login")
+        props.history.push("/login")
       } else {
         alert("Failed to sign up")
       }
