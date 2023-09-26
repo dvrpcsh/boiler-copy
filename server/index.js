@@ -2,10 +2,10 @@ const express = require('express')
 const app = express()
 const port = 5000
 const mongoose = require('mongoose');
-const { User } = require("./models/User");
+const { User } = require("../models/User");
 const bodyParser = require('body-parser');
 const config = require('./config/key');
-const { auth } = require('./middleware/auth');
+const { auth } = require('../middleware/auth');
 const cookieParser = require('cookie-parser');
 
 //application/x-www-form-urlencoded
@@ -50,7 +50,7 @@ app.post('/api/users/login', (req,res) => {
                     })
         }
         //db에서 검색이 되면 비밀번호 비교
-        user.comparePassword(req.body.password, (err, isMatch) => {
+        user.comparePassword(req.body.password, isMatch => {
             if(!isMatch) {
                 return res.json({ loginSuccess: false,
                     message: "비밀번호가 틀렸습니다."})
@@ -76,31 +76,40 @@ app.post('/api/users/login', (req,res) => {
 })
 
 app.get('/api/users/auth', auth , (req,res) => {
-
     // Authentication 통과
     res.status(200).json({
         _id: req.user._id,
-        isAdmin: req.role === 0? false: true,
+        isAdmin: req.user.role === 0 ? false : true,
         isAuth: true,
         email: req.user.email,
         name: req.user.name,
         role: req.user.role,
         image: req.user.image
     })
-
 })
 
-app.get('/api/users/logout', auth, (req,res) => {
-    User.findOneAndUpdate({_id: req.user._id}, 
-    { token: ""},
-    (err,user) => {
-        if(err) return res.json({success: false,err});
+//임시 테스트
+app.get('/api/test', (req,res) => {
+    console.log("abcabc")
+    res.send("testest!!!");
+})
+
+app.get('/api/users/logout' , auth , (req,res) => {
+    console.log("1110");
+    User.findOneAndUpdate({_id: req.user._id}, { token: ""})
+    .then(user => {
+    console.log("111");
+        if(!user) {
+            console.log("222")
+            return res.json({success: false,err});
+        }
+
+        console.log("333")
         return res.status(200).send({
             success:true
         })
     })
 })
-
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
