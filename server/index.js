@@ -90,21 +90,16 @@ app.get('/api/users/auth', auth , (req,res) => {
 
 //임시 테스트
 app.get('/api/test', (req,res) => {
-    console.log("abcabc")
     res.send("testest!!!");
 })
 
 app.get('/api/users/logout' , auth , (req,res) => {
-    console.log("1110");
     User.findOneAndUpdate({_id: req.user._id}, { token: ""})
     .then(user => {
-    console.log("111");
         if(!user) {
-            console.log("222")
             return res.json({success: false,err});
         }
 
-        console.log("333")
         return res.status(200).send({
             success:true
         })
